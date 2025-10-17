@@ -8,11 +8,6 @@ import dotenv from 'dotenv';
 import connectDB from './config/database';
 import { ApiResponse } from './types';
 
-// Import routes
-import userRoutes from './routes/users';
-import songRoutes from './routes/songs';
-import playlistRoutes from './routes/playlists';
-
 // Load environment variables
 dotenv.config();
 
@@ -62,9 +57,7 @@ app.get('/health', (req: Request, res: Response<ApiResponse>) => {
 });
 
 // API routes
-app.use('/api/users', userRoutes);
-app.use('/api/songs', songRoutes);
-app.use('/api/playlists', playlistRoutes);
+// Add your custom routes here
 
 // Root endpoint
 app.get('/', (req: Request, res: Response<ApiResponse>) => {
@@ -74,10 +67,7 @@ app.get('/', (req: Request, res: Response<ApiResponse>) => {
     data: {
       version: '1.0.0',
       endpoints: {
-        health: '/health',
-        users: '/api/users',
-        songs: '/api/songs',
-        playlists: '/api/playlists'
+        health: '/health'
       }
     }
   });

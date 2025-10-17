@@ -8,8 +8,9 @@ const connectDB = async (): Promise<void> => {
     } as mongoose.ConnectOptions);
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error: any) {
-    console.error('Database connection error:', error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Database connection error:', errorMessage);
     process.exit(1);
   }
 };
