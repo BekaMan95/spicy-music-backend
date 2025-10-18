@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import userRouter from './routers/userRouter';
+import musicRouter from './routers/musicRouter';
 
 import connectDB from './config/database';
 import { ApiResponse } from './types';
@@ -43,6 +45,9 @@ app.use(morgan('combined'));
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+app.use('/api/users', userRouter);
+app.use('/api/music', musicRouter);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response<ApiResponse>) => {
