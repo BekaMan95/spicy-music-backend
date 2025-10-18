@@ -22,7 +22,7 @@ app.use(helmet());
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'localhost:3000',
   credentials: true
 }));
 
@@ -45,7 +45,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response<ApiResponse>) => {
+app.get('/api/health', (req: Request, res: Response<ApiResponse>) => {
   res.status(200).json({
     success: true,
     message: 'Server is running',
@@ -60,14 +60,16 @@ app.get('/health', (req: Request, res: Response<ApiResponse>) => {
 // Add your custom routes here
 
 // Root endpoint
-app.get('/', (req: Request, res: Response<ApiResponse>) => {
+app.get('/api', (req: Request, res: Response<ApiResponse>) => {
   res.json({
     success: true,
     message: 'Welcome to Spicy Music Backend API',
     data: {
       version: '1.0.0',
       endpoints: {
-        health: '/health'
+        health: '/api/health',
+        users: '/api/users',
+        music: '/api/music'
       }
     }
   });
