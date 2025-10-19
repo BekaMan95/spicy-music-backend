@@ -14,7 +14,7 @@ const generateToken = (userId: string): string => {
 };
 
 // Register user
-export const register = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const register = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -68,15 +68,12 @@ export const register = async (req: Request, res: Response<ApiResponse>): Promis
     });
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Login user
-export const login = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const login = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -130,15 +127,12 @@ export const login = async (req: Request, res: Response<ApiResponse>): Promise<v
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Get user profile
-export const getProfile = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const getProfile = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const userId = (req as AuthRequest).user.userId;
 
@@ -167,15 +161,12 @@ export const getProfile = async (req: Request, res: Response<ApiResponse>): Prom
     });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Update user profile
-export const updateProfile = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const updateProfile = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -188,25 +179,25 @@ export const updateProfile = async (req: Request, res: Response<ApiResponse>): P
     }
 
     const userId = (req as AuthRequest).user.userId;
-    const { email, username } = req.body;
+    const { username } = req.body;
 
-    // Check if email or username already exists for other users
+    // Check if username already exists for other users
     const existingUser = await User.findOne({
       _id: { $ne: userId },
-      $or: [{ email }, { username }]
+      $or: [{ username }]
     });
 
     if (existingUser) {
       res.status(409).json({
         success: false,
-        message: existingUser.email === email ? 'Email already exists' : 'Username already exists'
+        message: existingUser.username === username ? 'Username already exists' : 'Email already exists'
       });
       return;
     }
 
     const user = await User.findByIdAndUpdate(
       userId,
-      { email, username },
+      { username },
       { new: true, runValidators: true }
     );
 
@@ -233,15 +224,12 @@ export const updateProfile = async (req: Request, res: Response<ApiResponse>): P
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Logout user (client-side token removal)
-export const logout = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const logout = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     res.status(200).json({
       success: true,
@@ -249,9 +237,6 @@ export const logout = async (req: Request, res: Response<ApiResponse>): Promise<
     });
   } catch (error) {
     console.error('Logout error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };

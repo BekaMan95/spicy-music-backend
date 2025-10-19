@@ -11,7 +11,9 @@ export interface AuthRequest extends Request {
 
 export const authenticate = async (req: Request, res: Response<ApiResponse>, next: NextFunction): Promise<void> => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const headerToken = req.header('Authorization')?.replace('Bearer ', '');
+    const cookieToken = (req as any).cookies?.token as string | undefined;
+    const token = headerToken || cookieToken;
 
     if (!token) {
       res.status(401).json({

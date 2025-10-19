@@ -29,7 +29,6 @@ services:
       - mongodb
     volumes:
       - .:/app
-      - /app/node_modules
     networks:
       - spicy-music-network
     command: npm run dev

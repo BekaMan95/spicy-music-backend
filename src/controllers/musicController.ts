@@ -4,7 +4,7 @@ import Music, { IMusic } from '../models/Music';
 import { ApiResponse } from '../types';
 
 // Create music
-export const createMusic = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const createMusic = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -44,15 +44,12 @@ export const createMusic = async (req: Request, res: Response<ApiResponse>): Pro
     });
   } catch (error) {
     console.error('Create music error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Get all music with pagination, search, and filtering
-export const getMusic = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const getMusic = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -95,10 +92,11 @@ export const getMusic = async (req: Request, res: Response<ApiResponse>): Promis
 
     const total = await Music.countDocuments(filter);
     const pages = Math.ceil(total / limit);
+    const message = total > 0 ? 'Music retrieved successfully' : 'No music found';
 
     res.status(200).json({
       success: true,
-      message: 'Music retrieved successfully',
+      message: message,
       data: music,
       count: music.length,
       total,
@@ -107,15 +105,12 @@ export const getMusic = async (req: Request, res: Response<ApiResponse>): Promis
     });
   } catch (error) {
     console.error('Get music error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Get single music by ID
-export const getMusicById = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const getMusicById = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const { id } = req.params;
 
@@ -146,15 +141,12 @@ export const getMusicById = async (req: Request, res: Response<ApiResponse>): Pr
     });
   } catch (error) {
     console.error('Get music by ID error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Update music
-export const updateMusic = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const updateMusic = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -200,15 +192,12 @@ export const updateMusic = async (req: Request, res: Response<ApiResponse>): Pro
     });
   } catch (error) {
     console.error('Update music error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Delete music
-export const deleteMusic = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const deleteMusic = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const { id } = req.params;
 
@@ -228,15 +217,12 @@ export const deleteMusic = async (req: Request, res: Response<ApiResponse>): Pro
     });
   } catch (error) {
     console.error('Delete music error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
 
 // Search music
-export const searchMusic = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
+export const searchMusic = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
   try {
     const { q } = req.query;
     const page = parseInt(req.query.page as string) || 1;
@@ -273,9 +259,6 @@ export const searchMusic = async (req: Request, res: Response<ApiResponse>): Pro
     });
   } catch (error) {
     console.error('Search music error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    next(error);
   }
 };
