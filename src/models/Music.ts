@@ -4,6 +4,7 @@ export interface IMusic extends Document {
   title: string;
   artist: string;
   album: string;
+  albumArt: string;
   genres: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -27,6 +28,10 @@ const musicSchema = new Schema<IMusic>({
     required: [true, 'Album is required'],
     trim: true,
     maxlength: [100, 'Album name cannot exceed 100 characters']
+  },
+  albumArt: {
+    type: String,
+    required: [true, 'album art image required'],
   },
   genres: {
     type: [String],

@@ -37,7 +37,23 @@ export const validateUpdateProfile = [
     .isLength({ min: 3, max: 30 })
     .withMessage('Username must be between 3 and 30 characters')
     .matches(/^[a-zA-Z0-9_]+$/)
-    .withMessage('Username can only contain letters, numbers, and underscores')
+    .withMessage('Username can only contain letters, numbers, and underscores'),
+  body('profilePic').custom((value, { req }) => {
+    const file = req.file;
+    if (!file) return true; // Skip if no file uploaded
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (!allowedTypes.includes(file.mimetype)) {
+      throw new Error('Only JPEG and PNG images are allowed');
+    }
+
+    if (file.size > maxSize) {
+      throw new Error('Profile picture must be less than 2MB');
+    }
+    return true;
+  }),
 ];
 
 // Music validation rules
@@ -61,9 +77,14 @@ export const validateCreateMusic = [
     .withMessage('Album name cannot exceed 100 characters')
     .trim(),
   body('genres')
-    .isArray({ min: 1 })
-    .withMessage('At least one genre is required')
-    .custom((genres: string[]) => {
+    .custom((value, { req }) => {
+      // Handle both single and multiple genre inputs
+      const genres = Array.isArray(value) ? value : [value];
+
+      if (genres.length === 0) {
+        throw new Error('At least one genre is required');
+      }
+
       if (!genres.every(genre => typeof genre === 'string' && genre.trim().length > 0)) {
         throw new Error('All genres must be non-empty strings');
       }
@@ -89,9 +110,14 @@ export const validateUpdateMusic = [
     .trim(),
   body('genres')
     .optional()
-    .isArray({ min: 1 })
-    .withMessage('At least one genre is required')
-    .custom((genres: string[]) => {
+    .custom((value, { req }) => {
+      // Handle both single and multiple genre inputs
+      const genres = Array.isArray(value) ? value : [value];
+
+      if (genres.length === 0) {
+        throw new Error('At least one genre is required');
+      }
+
       if (!genres.every(genre => typeof genre === 'string' && genre.trim().length > 0)) {
         throw new Error('All genres must be non-empty strings');
       }

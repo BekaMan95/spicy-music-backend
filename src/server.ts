@@ -37,6 +37,10 @@ const limiter = rateLimit({
     message: 'Too many requests from this IP, please try again later.'
   }
 });
+
+// To access images via URLs
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api/', limiter);
 
 // Logging middleware

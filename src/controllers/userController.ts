@@ -195,9 +195,15 @@ export const updateProfile = async (req: Request, res: Response<ApiResponse>, ne
       return;
     }
 
+    // Prepare update payload
+    const updateData: Partial<UserDocument> = { username };
+    if (req.file) {
+      updateData.profilePic = process.env.CORS_ORIGIN + "/" + req.file.path; // Store the file path here
+    }
+
     const user = await User.findByIdAndUpdate(
       userId,
-      { username },
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -217,6 +223,7 @@ export const updateProfile = async (req: Request, res: Response<ApiResponse>, ne
           id: user._id,
           email: user.email,
           username: user.username,
+          profilePic: user.profilePic,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt
         }

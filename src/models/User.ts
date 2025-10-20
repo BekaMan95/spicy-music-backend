@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   username: string;
   password: string;
+  profilePic: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -28,6 +29,7 @@ const userSchema = new Schema<IUser>({
     maxlength: [30, 'Username cannot exceed 30 characters'],
     match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores']
   },
+  profilePic: { type: String },
   password: {
     type: String,
     required: [true, 'Password is required'],

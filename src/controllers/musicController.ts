@@ -18,10 +18,18 @@ export const createMusic = async (req: Request, res: Response<ApiResponse>, next
 
     const { title, artist, album, genres } = req.body;
 
+    // Store the album art file path here
+    if (!req.file) {
+      throw new Error("Album art picture required");
+    }
+
+    const albumArt = process.env.CORS_ORIGIN + "/" + req.file.path;
+
     const music = new Music({
       title,
       artist,
       album,
+      albumArt,
       genres
     });
 
@@ -36,6 +44,7 @@ export const createMusic = async (req: Request, res: Response<ApiResponse>, next
           title: music.title,
           artist: music.artist,
           album: music.album,
+          albumArt: music.albumArt,
           genres: music.genres,
           createdAt: music.createdAt,
           updatedAt: music.updatedAt
@@ -133,6 +142,7 @@ export const getMusicById = async (req: Request, res: Response<ApiResponse>, nex
           title: music.title,
           artist: music.artist,
           album: music.album,
+          albumArt: music.albumArt,
           genres: music.genres,
           createdAt: music.createdAt,
           updatedAt: music.updatedAt
@@ -161,9 +171,22 @@ export const updateMusic = async (req: Request, res: Response<ApiResponse>, next
     const { id } = req.params;
     const { title, artist, album, genres } = req.body;
 
+    // Build update payload
+    const updateData: Partial<MusicDocument> = {
+      title,
+      artist,
+      album,
+      genres
+    };
+
+    // Conditionally update albumArt if a new file is uploaded
+    if (req.file) {
+      updateData.albumArt = `${process.env.CORS_ORIGIN}/${req.file.path}`;
+    }
+    
     const music = await Music.findByIdAndUpdate(
       id,
-      { title, artist, album, genres },
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -184,6 +207,7 @@ export const updateMusic = async (req: Request, res: Response<ApiResponse>, next
           title: music.title,
           artist: music.artist,
           album: music.album,
+          albumArt: music.albumArt,
           genres: music.genres,
           createdAt: music.createdAt,
           updatedAt: music.updatedAt
