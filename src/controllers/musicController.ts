@@ -262,3 +262,84 @@ export const searchMusic = async (req: Request, res: Response<ApiResponse>, next
     next(error);
   }
 };
+
+// Get music statistics
+export const getMusicStatistics = async (req: Request, res: Response<ApiResponse>, next: Function): Promise<void> => {
+  try {
+    // Total counts
+    const totalSongs = await Music.countDocuments();
+    const totalArtists = await Music.distinct('artist').then(artists => artists.length);
+    const totalAlbums = await Music.distinct('album').then(albums => albums.length);
+    const totalGenres = await Music.aggregate([
+      { $unwind: '$genres' },
+      { $group: { _id: '$genres' } },
+      { $count: 'total' }
+    ]).then(result => result[0]?.total || 0);
+
+    // Songs per genre
+    const songsPerGenre = await Music.aggregate([
+      { $unwind: '$genres' },
+      { $group: { _id: '$genres', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    // Songs and albums per artist
+    const artistStats = await Music.aggregate([
+      {
+        $group: {
+          _id: '$artist',
+          songCount: { $sum: 1 },
+          albums: { $addToSet: '$album' }
+        }
+      },
+      {
+        $project: {
+          artist: '$_id',
+          songCount: 1,
+          albumCount: { $size: '$albums' },
+          albums: 1,
+          artistLower: { $toLower: '$_id' } // arrtibute for sorting
+        }
+      },
+      { $sort: { artistLower: 1 } }
+    ]);
+
+    // Songs per album
+    const albumStats = await Music.aggregate([
+      {
+        $group: {
+          _id: { artist: '$artist', album: '$album' },
+          songCount: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          artist: '$_id.artist',
+          album: '$_id.album',
+          songCount: 1,
+          albumLower: { $toLower: '$_id.album' } // arrtibute for sorting
+        }
+      },
+      { $sort: { albumLower: 1 } }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Music statistics retrieved successfully',
+      data: {
+        totals: {
+          songs: totalSongs,
+          artists: totalArtists,
+          albums: totalAlbums,
+          genres: totalGenres
+        },
+        songsPerGenre: songsPerGenre,
+        artistStats: artistStats,
+        albumStats: albumStats
+      }
+    });
+  } catch (error) {
+    console.error('Get music statistics error:', error);
+    next(error);
+  }
+};

@@ -5,7 +5,8 @@ import {
   getMusicById, 
   updateMusic, 
   deleteMusic, 
-  searchMusic 
+  searchMusic,
+  getMusicStatistics
 } from '../controllers/musicController';
 import { authenticate } from '../middleware/auth';
 import { validateCreateMusic, validateUpdateMusic } from '../middleware/validation';
@@ -19,6 +20,7 @@ musicRouter.use(authenticate);
 musicRouter.post('/', validateCreateMusic, createMusic);
 musicRouter.get('/', getMusic);
 musicRouter.get('/search', searchMusic);
+musicRouter.get('/statistics', getMusicStatistics);
 musicRouter.get('/:id', getMusicById);
 musicRouter.put('/:id', validateUpdateMusic, updateMusic);
 musicRouter.delete('/:id', deleteMusic);
