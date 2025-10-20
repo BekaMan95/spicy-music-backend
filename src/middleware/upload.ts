@@ -1,24 +1,26 @@
-import multer from 'multer';
+import multer, { Multer, StorageEngine } from 'multer';
 import path from 'path';
+import { Request } from 'express';
 
-// Storage configuration
+
+// Configure storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Folder to store uploaded files
+  destination: function (
+    req: Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, destination: string) => void
+  ) {
+    cb(null, 'uploads/');
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // e.g., 1691234567890.jpg
+  filename: function (
+    req: Request,
+    file: Express.Multer.File,
+    cb: (error: Error | null, filename: string) => void
+  ) {
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
-// File filter (optional: restrict to images only)
-const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only image files are allowed'));
-  }
-};
+const upload = multer({ storage });
 
-export const upload = multer({ storage, fileFilter });
+export { upload };

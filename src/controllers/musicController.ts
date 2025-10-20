@@ -172,7 +172,7 @@ export const updateMusic = async (req: Request, res: Response<ApiResponse>, next
     const { title, artist, album, genres } = req.body;
 
     // Build update payload
-    const updateData: Partial<MusicDocument> = {
+    const updateData: Partial<IMusic> = {
       title,
       artist,
       album,
