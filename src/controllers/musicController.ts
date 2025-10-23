@@ -23,7 +23,7 @@ export const createMusic = async (req: Request, res: Response<ApiResponse>, next
       throw new Error("Album art picture required");
     }
 
-    const albumArt = process.env.CORS_ORIGIN + "/" + req.file.path;
+    const albumArt = req.file.path;
 
     const music = new Music({
       title,
