@@ -181,7 +181,7 @@ export const updateMusic = async (req: Request, res: Response<ApiResponse>, next
 
     // Conditionally update albumArt if a new file is uploaded
     if (req.file) {
-      updateData.albumArt = `${process.env.CORS_ORIGIN}/${req.file.path}`;
+      updateData.albumArt = req.file.path;
     }
     
     const music = await Music.findByIdAndUpdate(
