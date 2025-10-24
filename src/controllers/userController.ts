@@ -120,6 +120,7 @@ export const login = async (req: Request, res: Response<ApiResponse>, next: Func
           id: user._id,
           email: user.email,
           username: user.username,
+          profilePic: user.profilePic,
           createdAt: user.createdAt
         },
         token
@@ -154,6 +155,7 @@ export const getProfile = async (req: Request, res: Response<ApiResponse>, next:
           id: user._id,
           email: user.email,
           username: user.username,
+          profilePic: user.profilePic,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt
         }
