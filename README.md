@@ -1,60 +1,189 @@
-# Spicy Music Backend
+# Spicy Music Backend API Documentation
 
-A modern Express.js backend application built with TypeScript, MongoDB, and Mongoose, designed to run in Docker containers.
+## Overview
+This is a comprehensive REST API built with Express.js, TypeScript, and MongoDB for managing users and music collections. The API includes authentication, validation, and full CRUD operations.
 
-## Features
+## Features Implemented
 
-- **TypeScript**: Full TypeScript support with strict type checking
-- **Express.js**: Fast, unopinionated web framework
-- **MongoDB**: NoSQL database with Mongoose ODM
-- **Docker**: Containerized application with Docker Compose
-- **Security**: Helmet, CORS, and rate limiting
-- **API**: RESTful API with proper error handling
-- **Models**: User, Song, and Playlist models with relationships
+### User Management
+- ✅ User registration with email and username validation
+- ✅ User login with JWT authentication
+- ✅ User profile management (view and update)
+- ✅ Secure password hashing with bcrypt
+- ✅ JWT token-based authentication
 
-## Project Structure
+### Music Management
+- ✅ Create, read, update, delete music entries
+- ✅ Fetching music statistics
+- ✅ Search music by title, artist, album, or genres
+- ✅ Filter music by artist, album, or genre
+- ✅ Pagination support for large datasets
+- ✅ Sorting capabilities
 
+## API Endpoints
+
+### Authentication Endpoints
+
+#### Register User
 ```
-src/
-├── config/          # Configuration files
-│   └── database.ts  # MongoDB connection
-├── models/          # Mongoose models
-│   ├── User.ts
-│   ├── Song.ts
-│   └── Playlist.ts
-├── routes/          # API routes
-│   ├── users.ts
-│   ├── songs.ts
-│   └── playlists.ts
-├── types/           # TypeScript type definitions
-│   └── index.ts
-└── server.ts        # Main application file
+POST /api/users/register
 ```
-
-## Prerequisites
-
-- Node.js 18+ 
-- Docker and Docker Compose
-- npm or yarn
-
-## Getting Started
-
-### 1. Clone and Setup
-
-```bash
-git clone <repository-url>
-cd spicy-music-backend
+**Body:**
+```json
+{
+  "email": "user@example.com",
+  "username": "username",
+  "password": "password123"
+}
 ```
 
-### 2. Environment Configuration
-
-Copy the environment example file and configure your settings:
-
-```bash
-cp env.example .env
+#### Login User
+```
+POST /api/users/login
+```
+**Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
 ```
 
-Edit `.env` with your configuration:
+#### Get User Profile
+```
+GET /api/users/profile
+```
+**Headers:** `Authorization: Bearer <token>`
+
+#### Update User Profile
+```
+PUT /api/users/profile
+```
+**Headers:** `Authorization: Bearer <token>`
+**Body:**
+```json
+{
+  "email": "newemail@example.com",
+  "username": "newusername"
+}
+```
+
+#### Logout User
+```
+POST /api/users/logout
+```
+**Headers:** `Authorization: Bearer <token>`
+
+### Music Endpoints
+
+#### Create Music
+```
+POST /api/music
+```
+**Headers:** `Authorization: Bearer <token>`
+**Body:**
+```json
+{
+  "title": "Song Title",
+  "artist": "Artist Name",
+  "album": "Album Name",
+  "genres": ["Rock", "Alternative"]
+}
+```
+
+#### Get All Music (with pagination, search, and filtering)
+```
+GET /api/music?page=1&limit=10&search=rock&artist=beatles&album=abbey&genre=rock&sortBy=createdAt&sortOrder=desc
+```
+
+**Query Parameters:**
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 10)
+- `search`: Text search across title, artist, album
+- `artist`: Filter by artist name
+- `album`: Filter by album name
+- `genre`: Filter by genre
+- `sortBy`: Sort field (default: createdAt)
+- `sortOrder`: Sort direction - 'asc' or 'desc' (default: desc)
+
+#### Get Music by ID
+```
+GET /api/music/:id
+```
+**Headers:** `Authorization: Bearer <token>`
+
+#### Update Music
+```
+PUT /api/music/:id
+```
+**Headers:** `Authorization: Bearer <token>`
+**Body:**
+```json
+{
+  "title": "Updated Title",
+  "artist": "Updated Artist",
+  "album": "Updated Album",
+  "genres": ["Pop", "Rock"]
+}
+```
+
+#### Delete Music
+```
+DELETE /api/music/:id
+```
+**Headers:** `Authorization: Bearer <token>`
+
+#### Search Music
+```
+GET /api/music/search?q=searchterm&page=1&limit=10
+```
+**Headers:** `Authorization: Bearer <token>`
+
+#### Music Statistics
+```
+GET GET /api/music/statistics
+```
+**Headers:** `Authorization: Bearer <token>`
+
+## Response Format
+
+All API responses follow this consistent format:
+
+```json
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": { ... },
+  "count": 10,
+  "total": 100,
+  "page": 1,
+  "pages": 10
+}
+```
+
+## Error Handling
+
+The API returns appropriate HTTP status codes and error messages:
+
+- `400`: Bad Request (validation errors)
+- `401`: Unauthorized (invalid token)
+- `404`: Not Found (resource doesn't exist)
+- `409`: Conflict (duplicate email/username)
+- `500`: Internal Server Error
+
+## Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+---
+
+## Environment Variables
+
+Make sure to set these environment variables in your `.env` file:
 
 ```env
 NODE_ENV=development
@@ -67,7 +196,9 @@ RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 ```
 
-### 3. Development with Docker
+## Running the Application
+
+### Run with Docker Container
 
 Start the application with Docker Compose:
 
@@ -78,11 +209,14 @@ docker-compose up
 # Start in background
 docker-compose up -d
 
+# Stop all services
+docker-compose down
+
 # View logs
 docker-compose logs -f app
 ```
 
-### 4. Development without Docker
+### Run without Docker
 
 ```bash
 # Install dependencies
@@ -91,98 +225,96 @@ npm install
 # Start MongoDB (if not using Docker)
 # Make sure MongoDB is running on localhost:27017
 
+# Give read/write permission for uploaded files
+chmod 777 uploads/
+
 # Start development server
 npm run dev
 
 # Build TypeScript
 npm run build
 
-# Start production server
-npm start
+
 ```
 
-## API Endpoints
-
-### Health Check
-- `GET /health` - Server health status
-
-### Users
-- `GET /api/users` - Get all users
-- `GET /api/users/:id` - Get user by ID
-- `POST /api/users` - Create new user
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user (soft delete)
-
-### Songs
-- `GET /api/songs` - Get all songs (with filtering)
-- `GET /api/songs/:id` - Get song by ID
-- `POST /api/songs` - Create new song
-- `PUT /api/songs/:id` - Update song
-- `DELETE /api/songs/:id` - Delete song (soft delete)
-
-### Playlists
-- `GET /api/playlists` - Get all playlists
-- `GET /api/playlists/:id` - Get playlist by ID
-- `POST /api/playlists` - Create new playlist
-- `PUT /api/playlists/:id` - Update playlist
-- `POST /api/playlists/:id/songs` - Add song to playlist
-- `DELETE /api/playlists/:id/songs/:songId` - Remove song from playlist
-- `DELETE /api/playlists/:id` - Delete playlist
-
-## Scripts
-
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build TypeScript to JavaScript
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
-- `npm test` - Run tests
-
-## Docker Services
-
-- **app**: Node.js application (port 3000)
-- **mongodb**: MongoDB database (port 27017)
+---
 
 ## Database Models
 
-### User
-- Basic user information with authentication fields
-- Virtual field for full name
-- Soft delete support
+### User Model
+- `email`: String (unique, required, validated)
+- `username`: String (unique, required, 3-30 chars)
+- `profilePic`: String (optional, stored image path)
+- `password`: String (required, min 6 chars, hashed)
+- `createdAt`: Date (auto-generated)
+- `updatedAt`: Date (auto-generated)
 
-### Song
-- Music metadata (title, artist, album, genre)
-- File information and play count
-- Tags and relationships
-
-### Playlist
-- Collection of songs with ordering
-- Public/private visibility
-- Followers and play count
-
-## TypeScript Features
-
-- Strict type checking enabled
-- Interface definitions for all models
-- Proper typing for Express routes
-- Path mapping for clean imports
+### Music Model
+- `title`: String (required, max 200 chars)
+- `artist`: String (required, max 100 chars)
+- `album`: String (required, max 100 chars)
+- `albumArt`: String (required, stored image path)
+- `genres`: Array of Strings (required, at least one element)
+- `createdAt`: Date (auto-generated)
+- `updatedAt`: Date (auto-generated)
 
 ## Security Features
 
-- Helmet for security headers
-- CORS configuration
-- Rate limiting
-- Input validation
-- Error handling
+- Password hashing with bcrypt
+- JWT token authentication
+- Input validation and sanitization
+- Rate limiting (100 requests per 15 minutes)
+- ~~CORS protection~~
+- Helmet security headers
 
-## Contributing
+## Performance Optimizations
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+- Database indexing for efficient queries
+- Text search indexes for music search
+- Pagination for large datasets
+- Optimized MongoDB queries
+- Database Aggregation
 
-## License
+## Testing the API
 
-MIT License
+You can test the API using tools like **Postman**, **curl** or **Insomnia**
+
+### Like:
+
+```bash
+# Create music (replace TOKEN with actual JWT token)
+curl -X POST http://localhost:3000/api/music \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{"title":"Test Song","artist":"Test Artist","album":"Test Album","genres":["Rock","Pop"]}'
+```
+
+---
+
+## Project Structure
+
+```
+src/
+├── config/
+│   └── database.ts          # MongoDB connection
+├── controllers/
+│   ├── userController.ts    # User business logic
+│   └── musicController.ts   # Music business logic
+├── middleware/
+│   ├── auth.ts             # JWT authentication
+│   ├── upload.ts           # File upload
+│   └── validation.ts       # Input validation
+├── models/
+│   ├── User.ts             # User Mongoose model
+│   └── Music.ts            # Music Mongoose model
+├── routers/
+│   ├── userRouter.ts       # User routes
+│   └── musicRouter.ts      # Music routes
+├── types/
+│   └── index.ts            # TypeScript type definitions
+└── server.ts               # Express server setup
+```
+
+Implementation followed with proper authentication, validation, and a global error handling following TypeScript and Express.js best practices.
+
+---
