@@ -1,6 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-// import helmet from 'helmet';
+// import cors from 'cors';
+import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
@@ -20,13 +20,20 @@ const PORT: number = parseInt(process.env.PORT || '3000', 10);
 connectDB();
 
 // Security middleware
-// app.use(helmet());
+app.use(helmet());
 
 // CORS configuration
-app.use(cors({
-  origin: [ JSON.stringify(process.env.CORS_ORIGIN), 'http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
-}));
+// app.use(cors({
+//   origin: [ JSON.stringify(process.env.CORS_ORIGIN), 'http://localhost:3000', 'http://localhost:5173'],
+//   credentials: true
+// }));
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
+
 
 // Rate limiting
 const limiter = rateLimit({
