@@ -23,7 +23,7 @@ connectDB();
 app.use(helmet());
 
 // CORS configuration
-app.use(cors({
+app.options('*', cors({
   origin: process.env.CORS_ORIGIN,
   credentials: true
 }));
