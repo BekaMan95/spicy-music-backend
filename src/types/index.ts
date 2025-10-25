@@ -14,7 +14,8 @@ export interface ApiResponse<T = unknown> {
 export interface EnvironmentConfig {
   NODE_ENV: string;
   PORT: number;
-  MONGODB_URI: string;
+  MONGO_URI_LOCAL: string;
+  MONGO_URI_PROD: string;
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
   CORS_ORIGIN: string;

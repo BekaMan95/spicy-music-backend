@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const connectDB = async (): Promise<void> => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI!, {
+    const conn = await mongoose.connect(process.env.NODE_ENV! === 'production' ? process.env.MONGO_URI_PROD! : process.env.MONGO_URI_LOCAL!, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     } as mongoose.ConnectOptions);

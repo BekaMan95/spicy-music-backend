@@ -188,7 +188,8 @@ Make sure to set these environment variables in your `.env` file:
 ```env
 NODE_ENV=development
 PORT=3000
-MONGODB_URI=mongodb://admin:password123@localhost:27017/spicy_music?authSource=admin
+MONGO_URI_LOCAL=mongodb://admin:password123@localhost:27017/spicy_music?authSource=admin
+MONGO_URI_PROD=your-remote-mongodb-uri
 JWT_SECRET=your-super-secret-jwt-key-here
 JWT_EXPIRES_IN=7d
 CORS_ORIGIN=http://localhost:3000

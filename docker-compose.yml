@@ -23,7 +23,7 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: development
-      MONGODB_URI: mongodb://admin:password123@mongodb:27017/spicy_music?authSource=admin
+      MONGO_URI_LOCAL: mongodb://admin:password123@mongodb:27017/spicy_music?authSource=admin
       PORT: 3000
     depends_on:
       - mongodb
