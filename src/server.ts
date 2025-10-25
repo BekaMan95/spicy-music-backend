@@ -77,7 +77,13 @@ const limiter = rateLimit({
 // --------------------
 // Static & Logging
 // --------------------
-app.use('/uploads', express.static('uploads'));
+// Serve static files with proper headers
+app.use('/uploads', express.static('uploads', {
+  setHeaders: (res, path) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
+
 app.use('/api/', limiter);
 app.use(morgan('combined'));
 
