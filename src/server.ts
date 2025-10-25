@@ -18,7 +18,6 @@ import { ApiResponse } from './types';
 // Load environment variables
 dotenv.config();
 
-console.log('<++++', process.env.CORS_ORIGIN, JSON.stringify(process.env.CORS_ORIGIN), '+++++>')
 
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
@@ -39,11 +38,13 @@ const allowedOrigins: string[] = rawOrigins
   .split(',')
   .map((o) => o.trim())
   .filter((o) => o.length > 0);
-console.log('<++++', process.env.CORS_ORIGIN, process.env.CORS_ORIGIN_DEV, '+++++>')
+
 // Default to localhost for development
 if (process.env.NODE_ENV === 'development') {
   allowedOrigins.push(process.env.CORS_ORIGIN_DEV || 'cross');
 }
+
+console.log('🌍 Allowed Origins:', allowedOrigins);
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
