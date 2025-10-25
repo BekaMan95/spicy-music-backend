@@ -1,5 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
-// import cors from 'cors';
+import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
@@ -23,25 +23,9 @@ connectDB();
 app.use(helmet());
 
 // CORS configuration
-// app.use(cors({
-//   origin: [ JSON.stringify(process.env.CORS_ORIGIN), 'http://localhost:3000', 'http://localhost:5173'],
-//   credentials: true
-// }));
-
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", process.env.CORS_ORIGIN);
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   res.header("Access-Control-Allow-Credentials", "true");
-//   next();
-// });
-
-const cors = require('cors');
-
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
-  credentials: true,
-  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+  credentials: true
 }));
 
 
